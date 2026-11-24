@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#7b4a20">
+<title>Los sonidos del Antiguo Egipto</title>
+<style>
+:root{--papyrus:#f5e7c5;--ink:#482d19;--gold:#c18a32;--dark:#603819}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(circle at top,#fff5dc,var(--papyrus));color:var(--ink);font-family:Georgia,serif}
+header{text-align:center;padding:34px 18px 25px;background:linear-gradient(135deg,#603819,#95612b);color:#fff3d4;border-bottom:7px solid var(--gold)}
+.eyebrow{letter-spacing:3px;text-transform:uppercase;font:12px Arial,sans-serif;color:#f4d58f}
+h1{font-size:clamp(27px,6vw,42px);margin:12px 0}
+header p{font:16px/1.5 Arial,sans-serif;margin:0 auto;max-width:560px}
+main{max-width:950px;margin:26px auto;padding:0 16px 36px}
+.intro{text-align:center;font:16px/1.6 Arial,sans-serif;margin:0 auto 24px;max-width:700px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px}
+.instrument{background:#fff9eb;border:1px solid #d9bd83;border-radius:15px;padding:18px;text-align:center;box-shadow:0 4px 12px #59340e16}
+.symbol{font-size:42px;line-height:1.3}
+h2{font-size:21px;margin:8px 0;color:var(--dark)}
+.instrument p{font:13px/1.45 Arial,sans-serif;min-height:38px;color:#6d5742}
+button{border:0;border-radius:24px;background:var(--dark);color:white;padding:12px 17px;font:bold 14px Arial,sans-serif;cursor:pointer}
+button:active{transform:scale(.98)}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.note{text-align:center;font:12px/1.5 Arial,sans-serif;color:#725b43;margin:25px auto 0;max-width:700px}
+footer{text-align:center;padding:18px;background:#603819;color:#fff0d0;font:13px Arial,sans-serif}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Un viaje por la historia</div>
+  <h1>𓂀 Los sonidos del Antiguo Egipto 𓂀</h1>
+  <p>¡Bienvenidos! Elegí un instrumento, tocá el botón y descubrí sus sonidos.</p>
+</header>
+<main>
+  <p class="intro">En el Antiguo Egipto la música acompañaba celebraciones, ceremonias y momentos de la vida cotidiana. ¡Exploremos algunos de sus instrumentos!</p>
+  <section class="grid" aria-label="Instrumentos musicales">
+    <article class="instrument"><div class="symbol">🔔</div><h2>Sistro</h2><p>Un instrumento de sonajas, con un sonido tintineante.</p><button onclick="play('sistro')">▶ Escuchar sonido</button></article>
+    <article class="instrument"><div class="symbol">📿</div><h2>Menat</h2><p>Un collar-sonaja que producía un suave sonido al moverse.</p><button onclick="play('menat')">▶ Escuchar sonido</button></article>
+    <article class="instrument"><div class="symbol">🥁</div><h2>Tambores</h2><p>Ritmos de percusión con golpes graves y agudos.</p><button onclick="play('tambores')">▶ Escuchar sonido</button></article>
+    <article class="instrument"><div class="symbol">🎶</div><h2>Flauta recta</h2><p>Un sonido de viento suave y melodioso.</p><button onclick="play('flauta')">▶ Escuchar sonido</button></article>
+    <article class="instrument"><div class="symbol">🎺</div><h2>Chirimba doble</h2><p>Una recreación de dos tubos de lengüeta sonando juntos.</p><button onclick="play('chirimba')">▶ Escuchar sonido</button></article>
+    <article class="instrument"><div class="symbol">🪕</div><h2>Arpa</h2><p>Cuerdas pulsadas con un sonido cálido y delicado.</p><button onclick="play('arpa')">▶ Escuchar sonido</button></article>
+    <article class="instrument"><div class="symbol">🎸</div><h2>Laúd</h2><p>Una melodía de cuerdas pulsadas.</p><button onclick="play('laud')">▶ Escuchar sonido</button></article>
+    <article class="instrument"><div class="symbol">🎼</div><h2>Lira</h2><p>Notas brillantes de un antiguo instrumento de cuerdas.</p><button onclick="play('lira')">▶ Escuchar sonido</button></article>
+  </section>
+  <p class="note">Los sonidos son recreaciones digitales orientativas, no grabaciones originales de la Antigüedad. Para escucharlos, puede ser necesario tocar el botón una vez más si el navegador solicita permiso de audio.</p>
+</main>
+<footer>✦ Muestra anual · Proyecto sobre el Antiguo Egipto ✦</footer>
+<script>
+let ctx;
+function audio(){if(!ctx)ctx=new (window.AudioContext||window.webkitAudioContext)();if(ctx.state==='suspended')ctx.resume();return ctx}
+function tone(c,f,t,d,type='sine',vol=.12,det=0){
+ const o=c.createOscillator(),g=c.createGain();o.type=type;o.frequency.setValueAtTime(f,t);if(det)o.detune.setValueAtTime(det,t);
+ g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(vol,t+.025);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+ o.connect(g);g.connect(c.destination);o.start(t);o.stop(t+d+.04);
+}
+function noise(c,t,d,vol=.12,filter=2500){
+ const n=Math.floor(c.sampleRate*d),b=c.createBuffer(1,n,c.sampleRate),a=b.getChannelData(0);
+ for(let i=0;i<n;i++)a[i]=Math.random()*2-1;
+ const s=c.createBufferSource(),f=c.createBiquadFilter(),g=c.createGain();
+ s.buffer=b;f.type='lowpass';f.frequency.value=filter;g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+ s.connect(f);f.connect(g);g.connect(c.destination);s.start(t);s.stop(t+d);
+}
+function play(which){
+ const c=audio(),t=c.currentTime+.04;
+ if(which==='sistro'){
+  for(let i=0;i<9;i++){let x=t+i*.075;noise(c,x,.11,.045,6500);tone(c,2100+(i%3)*370,x,.12,'sine',.025);tone(c,3100+(i%2)*250,x,.09,'triangle',.018)}
+ } else if(which==='menat'){
+  for(let i=0;i<7;i++){let x=t+i*.12;noise(c,x,.16,.035,4200);tone(c,1250+i*65,x,.16,'sine',.018)}
+ } else if(which==='tambores'){
+  for(let i=0;i<5;i++){let x=t+i*.34;tone(c,105-(i%2)*22,x,.25,'sine',.34);noise(c,x,.09,.11,900)}
+ } else if(which==='flauta'){
+  [392,440,494,587,523,440].forEach((f,i)=>tone(c,f,t+i*.34,.38,'sine',.09));
+ } else if(which==='chirimba'){
+  [220,247,262,294,262,247].forEach((f,i)=>{tone(c,f,t+i*.3,.34,'sawtooth',.045);tone(c,f*1.5,t+i*.3,.32,'triangle',.025,7)});
+ } else if(which==='arpa'){
+  [392,494,587,659,587,494].forEach((f,i)=>{tone(c,f,t+i*.22,1.0,'triangle',.11);tone(c,f*2,t+i*.22,.45,'sine',.025)});
+ } else if(which==='laud'){
+  [196,247,294,330,294,247].forEach((f,i)=>{tone(c,f,t+i*.25,.62,'triangle',.12);tone(c,f*2,t+i*.25,.25,'sine',.025)});
+ } else if(which==='lira'){
+  [330,392,494,523,494,392].forEach((f,i)=>{tone(c,f,t+i*.27,.85,'sine',.10);tone(c,f*2.01,t+i*.27,.45,'triangle',.025)});
+ }
+}
+</script>
+</body>
+</html>
